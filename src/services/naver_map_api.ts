@@ -16,10 +16,11 @@ async function geocodeAddress(addr: string) {
     validateStatus: (s: number) => s >= 200 && s < 500,
   });
 
-  if (!data?.addresses?.length) return null;
   const best = data.addresses[0];
   const lng = parseFloat(best.x);
   const lat = parseFloat(best.y);
+
+  
   if (Number.isFinite(lng) && Number.isFinite(lat)) {
     return { type: "Point", coordinates: [lng, lat] };
   }
