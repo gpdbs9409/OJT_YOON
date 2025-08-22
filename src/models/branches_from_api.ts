@@ -1,9 +1,17 @@
-export interface Franchise {
-  _id?: string;
-  name: string;        // 지점명 (예: "부산명지 CGV점")
-  addr: string;        // 주소 (예: "부산광역시 강서구 명지국제8로 10번길 38, 1층")
-  tel: string;         // 전화번호 (예: "051-207-6001")
-  period?: string;     // 운영시간 (선택사항, 현재 빈 문자열)
-  __v?: number;        // 버전 키 (MongoDB에서 자동 생성)
-}
+const mongoose = require("mongoose");
+const { Schema } = mongoose;
 
+const FranchiseSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    addr: { type: String, required: true },
+    tel: { type: String, required: true },
+    period: { type: String, default: "" },
+  },
+  { timestamps: true }
+);
+
+// 이미 선언돼 있으면 재사용
+module.exports =
+  mongoose.models.Franchise ||
+  mongoose.model("Franchise", FranchiseSchema, "franchise_raw");

@@ -1,120 +1,65 @@
 require("dotenv").config();
 const express = require("express");
-const { ObjectId } = require("mongodb");
 const swaggerUi = require("swagger-ui-express");
 const { createSwaggerSpec } = require("../utils/swagger");
-import type { Franchise } from "../models/branches_from_api";
-
+const { connectMongoose } = require("../utils/mongoose");
+const Franchise = require("../models/branches_from_api");
 const PORT = Number(process.env.PORT || 3000);
-const COL = "franchise_raw"; // 원본 저장 컬렉션
-
-// ----- Swagger 설정 -----
 const specs = createSwaggerSpec(PORT);
 
-// ----- DB 연결 -----
-const { getDb } = require("../utils/db");
-
-// ----- App -----
 const app = express();
 app.use(express.json());
-
-// Swagger UI 설정
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
-
-
-// 프랜차이즈 목록 조회
-app.get("/api/franchises", async (req: any, res: any) => {
-  try {
-    const db = await getDb();
-    const col = db.collection(COL);
-    const items = await col.find({}).toArray();
-    res.json(items);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message || String(e) });
-  }
-});
-
-
-// 새로운 프랜차이즈 생성
-app.post("/api/franchises", async (req: any, res: any) => {
-  try {
-    const db = await getDb();
-    const col = db.collection(COL);
-    
-    // 필수 필드 검증
-    const { name, addr, tel } = req.body || {};
-    if (!name || !addr || !tel) {
-      return res.status(400).json({ 
-        error: "필수 필드가 누락되었습니다. name, addr, tel은 필수입니다." 
-      });
-    }
-    
-    const franchiseData = {
-      name: String(name),
-      addr: String(addr),
-      tel: String(tel),
-      period: req.body.period || ""
-    };
-    
-    const r = await col.insertOne(franchiseData);
-    const doc = await col.findOne({ _id: r.insertedId });
-    res.status(201).json(doc);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message || String(e) });
-  }
-});
-
-// 프랜차이즈 정보 수정
-app.patch("/api/franchises/:id", async (req: any, res: any) => {
-  try {
-    const db = await getDb();
-    const col = db.collection(COL);
-
-    let _id;
+connectMongoose().then(() => {
+  app.get("/api/franchises", async (_req: any, res: any) => {
     try {
-      _id = new ObjectId(req.params.id);
-    } catch {
-      return res.status(400).json({ error: "invalid id" });
+      const items = await Franchise.find().sort({ _id: -1 }).lean();
+      res.json(items);
+    } catch (e: any) {
+      res.status(500).json({ error: e.message || String(e) });
     }
+  });
 
-    await col.updateOne({ _id }, { $set: req.body || {} });
-    const doc = await col.findOne({ _id });
-    res.json(doc);
-  } catch (e: any) {
-    res.status(500).json({ error: e.message || String(e) });
-  }
-});
-
-// 프랜차이즈 삭제
-app.delete("/api/franchises/:id", async (req: any, res: any) => {
-  try {
-    const db = await getDb();
-    const col = db.collection(COL);
-
-    let _id;
+  // 생성 (스키마 검증 적용)
+  app.post("/api/franchises", async (req: any, res: any) => {
     try {
-      _id = new ObjectId(req.params.id);
-    } catch {
-      return res.status(400).json({ error: "invalid id" });
+      const doc = await Franchise.create(req.body);
+      res.status(201).json(doc);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message || String(e) });
     }
+  });
 
-    const r = await col.deleteOne({ _id });
-    if (!r.deletedCount) return res.status(404).json({ error: "not found" });
-    res.status(204).send();
-  } catch (e: any) {
-    res.status(500).json({ error: e.message || String(e) });
-  }
-});
+  // 수정 (검증 포함)
+  app.patch("/api/franchises/:id", async (req: any, res: any) => {
+    try {
+      const doc = await Franchise.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true,
+      }).lean();
+      if (!doc) return res.status(404).json({ error: "not found" });
+      res.json(doc);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message || String(e) });
+    }
+  });
 
-// ----- Start -----
-app.listen(PORT, () => {
-  console.log(`🚀 http://localhost:${PORT}`);
+  // 삭제
+  app.delete("/api/franchises/:id", async (req: any, res: any) => {
+    try {
+      const r = await Franchise.deleteOne({ _id: req.params.id });
+      if (!r.deletedCount) return res.status(404).json({ error: "not found" });
+      res.status(204).send();
+    } catch (e: any) {
+      res.status(400).json({ error: e.message || String(e) });
+    }
+  });
+
+  app.listen(PORT, () => console.log(`🚀 http://localhost:${PORT}`));
 });
 
 // ===== Swagger API 문서화 =====
-
-
 
 /**
  * @swagger
@@ -192,8 +137,6 @@ app.listen(PORT, () => {
  *         description: 서버 오류
  */
 
-
-
 /**
  * @swagger
  * /api/franchises:
@@ -259,7 +202,7 @@ app.listen(PORT, () => {
 /**
  * @swagger
  * /api/franchises/{id}:
- *   update:
+ *   patch:
  *     summary: 프랜차이즈 정보 수정
  *     description: 특정 프랜차이즈 정보를 부분적으로 수정합니다.
  *     parameters:
