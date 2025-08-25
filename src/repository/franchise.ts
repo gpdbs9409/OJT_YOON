@@ -1,16 +1,16 @@
 require("dotenv").config();
 
 const mongoose = require("mongoose");
-const { connectMongoose } = require("../models/database");
-const { FranchiseSchema } = require("../models/branches_crawling");
+const { connectMongoose } = require("../config/database");
+const Franchise = require("../models/branches_crawling");
 
 // 설빙/미소야 크롤링 모델 저장
 async function saveToMongo(docs: any[]) {
   await connectMongoose();
-  await FranchiseSchema.deleteMany({});
+  await Franchise.deleteMany({});
   try {
     // 스키마 검증됨 (누락되면 ValidationError)
-    const result = await FranchiseSchema.insertMany(docs, { ordered: false });
+    const result = await Franchise.insertMany(docs, { ordered: false });
     console.log(`MongoDB 저장 완료: ${result.length}건`);
     return result;
   } finally {
@@ -37,29 +37,7 @@ async function saveToMongoFromApi(docs: any[]) {
   }
 }
 
-// 프랜차이즈 데이터 조회
-async function findAllFranchises() {
-  await connectMongoose();
-  try {
-    return await FranchiseSchema.find({});
-  } finally {
-    await mongoose.disconnect();
-  }
-}
-
-// 브랜드별 프랜차이즈 조회
-async function findFranchisesByBrand(brandName: string) {
-  await connectMongoose();
-  try {
-    return await FranchiseSchema.find({ brandName });
-  } finally {
-    await mongoose.disconnect();
-  }
-}
-
 module.exports = { 
   saveToMongo, 
   saveToMongoFromApi, 
-  findAllFranchises, 
-  findFranchisesByBrand 
 };

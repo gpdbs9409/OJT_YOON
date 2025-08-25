@@ -1,4 +1,25 @@
 {
+  "name": "ojt-yoon",
+  "version": "1.0.0",
+  "description": "프랜차이즈 정보 수집 및 관리 시스템",
+  "main": "src/server.ts",
+  "scripts": {
+    "start": "ts-node src/server.ts",
+    "dev": "ts-node src/server.ts",
+    "crawl:myfranchise": "ts-node src/services/api/myfranchise.service.ts",
+    "crawl:misoya": "ts-node src/services/crawling/misoya-crawling.service.ts",
+    "crawl:sulbing": "ts-node src/services/crawling/sulbing-crawling.service.ts",
+    "test:geocoding": "ts-node src/services/geocoding/naver-geocoding.service.ts"
+  },
+  "keywords": [
+    "franchise",
+    "crawling",
+    "api",
+    "mongodb",
+    "typescript"
+  ],
+  "author": "OJT_YOON",
+  "license": "MIT",
   "devDependencies": {
     "@types/cheerio": "^0.22.35",
     "@types/express": "^5.0.3",
@@ -13,6 +34,7 @@
     "cheerio": "^1.1.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "fake-useragent": "^1.0.1",
     "mongodb": "^6.18.0",
     "mongoose": "^8.17.1",
     "request": "^2.88.2",
