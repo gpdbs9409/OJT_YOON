@@ -1,4 +1,4 @@
-import mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
 let isReady = false;
 
@@ -10,7 +10,7 @@ async function connectMongoose() {
     await mongoose.connect(uri); // URI에 DB 포함 가정
     isReady = true;
 
-    mongoose.connection.on("error", (e: unknown) => {
+    mongoose.connection.on("error", (e: any) => {
       // 로그 시 안전하게 처리
       if (e instanceof Error) {
         console.error("[mongoose]", e.message, e.stack);

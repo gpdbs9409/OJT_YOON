@@ -1,23 +1,23 @@
 
-## 📁 프로젝트 구조
+## 📁 프로젝트 구조 (MVC 패턴)
 
 ```
 OJT_YOON/
 ├── src/
-│   ├── models/
+│   ├── models/                        # Model 계층
 │   │   ├── branches_crawling.ts      # 설빙/미소야 크롤링 모델
-│   │   └── branches_from_api.ts      # 마이프차 제공 API 모델
-│   ├── routes/
+│   │   ├── branches_from_api.ts      # 마이프차 제공 API 모델
+│   │   ├── database.ts               # 데이터베이스 연결 관리
+│   │   └── franchise.repository.ts   # 데이터 접근 로직
+│   ├── routes/                        # Controller 계층
 │   │   └── franchises.ts             # CRUD 라우트
-│   ├── services/
+│   ├── services/                      # Service 계층 (비즈니스 로직)
 │   │   ├── get_from_api.ts           # 마이프차 API fetch 함수
-│   │   ├── misoya_crawl.ts
+│   │   ├── misoya_crawl.ts           # 미소야 크롤링
 │   │   ├── naver_map_api.ts          # 네이버 맵 API (주소→위경도)
-│   │   ├── save_to_mongo.ts          # MongoDB 저장 함수
-│   │   └── sulbing_crawl.ts
+│   │   └── sulbing_crawl.ts          # 설빙 크롤링
 │   └── utils/
-│       ├── swagger.ts                # Swagger 설정
-│       └── mongoose.ts               
+│       └── swagger.ts                # Swagger 설정
 ├── package.json
 ├── tsconfig.json
 └── README.md

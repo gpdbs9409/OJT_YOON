@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const swaggerUi = require("swagger-ui-express");
 const { createSwaggerSpec } = require("../utils/swagger");
-const { connectMongoose } = require("../utils/mongoose");
+const { connectMongoose } = require("../models/database");
 const Franchise = require("../models/branches_from_api");
 const PORT = Number(process.env.PORT || 3000);
 const specs = createSwaggerSpec(PORT);

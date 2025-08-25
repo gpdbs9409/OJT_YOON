@@ -1,4 +1,4 @@
-import mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const FranchiseSchema = new Schema(
   {
@@ -24,5 +24,7 @@ const FranchiseSchema = new Schema(
 
 FranchiseSchema.index({ location: "2dsphere" });
 
-export type FranchiseDoc = mongoose.InferSchemaType<typeof FranchiseSchema>;
+// TypeScript 타입 정의 (CommonJS에서는 export type 대신 주석으로 처리)
+// type FranchiseDoc = mongoose.InferSchemaType<typeof FranchiseSchema>;
+
 module.exports = mongoose.model("Franchise", FranchiseSchema);

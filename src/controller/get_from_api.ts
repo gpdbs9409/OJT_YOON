@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { saveToMongoFromApi } = require("./save_to_mongo");
+const { saveToMongoFromApi } = require("../models/franchise.repository");
 
 const BASE_URL = "https://dev-fc-api.myfranchise.kr/api/v1/crawling";
 const REG_NO = "20171254";

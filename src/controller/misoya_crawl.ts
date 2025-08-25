@@ -1,7 +1,7 @@
-import cheerio = require("cheerio");
-import axios = require("axios");
+const cheerio = require("cheerio");
+const axios = require("axios");
 const { geocodeAddress } = require("./naver_map_api");
-const {saveToMongo}=require("../services/save_to_mongo")
+const {saveToMongo}=require("../models/franchise.repository")
 
 export type MisoyaStore = {
   brandName: "미소야";

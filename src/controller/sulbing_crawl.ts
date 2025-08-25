@@ -1,10 +1,10 @@
 // src/services/sulbing.ts
 
-import axios = require("axios");
-import cheerio = require("cheerio");
+const axios = require("axios");
+const cheerio = require("cheerio");
 const { geocodeAddress } = require("./naver_map_api");
 const Franchise = require("../models/branches_crawling");
-const {saveToMongo}=require("../services/save_to_mongo")
+const {saveToMongo}=require("../models/franchise.repository")
 
 
 export type SulbingStore = {
