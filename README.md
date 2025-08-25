@@ -2,7 +2,7 @@
 ## 📁 프로젝트 구조
 
 ```
-마이프차_과제_김혜윤/
+OJT_YOON/
 ├── src/
 │   ├── models/
 │   │   ├── branches_crawling.ts      # 설빙/미소야 크롤링 모델
@@ -11,14 +11,13 @@
 │   │   └── franchises.ts             # CRUD 라우트
 │   ├── services/
 │   │   ├── get_from_api.ts           # 마이프차 API fetch 함수
-│   │   ├── misoya.ts
+│   │   ├── misoya_crawl.ts
 │   │   ├── naver_map_api.ts          # 네이버 맵 API (주소→위경도)
 │   │   ├── save_to_mongo.ts          # MongoDB 저장 함수
-│   │   └── sulbing.ts
+│   │   └── sulbing_crawl.ts
 │   └── utils/
-│       ├── db.ts                     # MongoDB 연결 (네이티브/또는 Mongoose 유틸)
 │       ├── swagger.ts                # Swagger 설정
-│       └── update.ts                 # 가맹점 업데이트 확인/적용
+│       └── mongoose.ts               
 ├── package.json
 ├── tsconfig.json
 └── README.md

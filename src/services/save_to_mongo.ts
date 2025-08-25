@@ -1,12 +1,12 @@
 require("dotenv").config();
 
 const mongoose = require("mongoose");
-const { getDb } = require("../utils/db");
+const { connectMongoose }= require("../utils/mongoose")
 const { FranchiseSchema } = require("../models/branches_crawling");
 
 // 설빙/미소야 크롤링 모델
 async function saveToMongo(docs: any[]) {
-  await getDb();
+  await connectMongoose();
   await FranchiseSchema.deleteMany({});
   try {
     // 스키마 검증됨 (누락되면 ValidationError)
@@ -24,8 +24,9 @@ const RawModel =
   mongoose.model("FranchiseRaw", RawSchema, "franchise_raw");
 
 async function saveToMongoFromApi(docs: any[]) {
-  const uri = process.env.MONGODB_URI;
-  await mongoose.connect(uri);
+    
+
+  await connectMongoose();
 
   try {
     await RawModel.deleteMany({});

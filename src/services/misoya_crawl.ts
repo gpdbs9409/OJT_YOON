@@ -1,8 +1,7 @@
 import cheerio = require("cheerio");
 import axios = require("axios");
 const { geocodeAddress } = require("./naver_map_api");
-const Franchise= require("../models/branches_crawling")
-const mongoose = require("mongoose");
+const {saveToMongo}=require("../services/save_to_mongo")
 
 export type MisoyaStore = {
   brandName: "미소야";
@@ -62,20 +61,8 @@ if (require.main === module) {
     const list = await crawlMisoyaAll(5);
     console.log("총 건수:", list.length);
     console.log(JSON.stringify(list.slice(0, 2), null, 2));
-    const uri = process.env.MONGODB_URI;
-    if (!uri) throw new Error("MONGODB_URI 환경변수 없음");
-    await mongoose.connect(uri);
-    try {
-      await Franchise.deleteMany({});
-      await Franchise.insertMany(list, { ordered: false });
-      console.log("Misoya 저장 완료");
-    } finally {
-      await mongoose.disconnect();
-    }
-  })().catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
+    await saveToMongo();}
+   );
 }
 
 module.exports = { crawlMisoyaAll };
