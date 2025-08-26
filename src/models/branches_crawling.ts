@@ -19,7 +19,7 @@ const FranchiseSchema = new Schema(
       },
     },
   },
-  { timestamps: true }
+
 );
 
 FranchiseSchema.index({ location: "2dsphere" });

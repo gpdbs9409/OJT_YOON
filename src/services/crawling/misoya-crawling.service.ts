@@ -92,7 +92,7 @@ class MisoyaCrawlingService {
   static async crawlAndSave(maxPages = 50) {
     try {
       const stores = await this.crawlAllStores(maxPages);
-      await saveToMongo(stores);
+      await saveToMongo(stores, "misoya_stores");
       console.log('✅ 미소야 매장 정보 저장 완료');
     } catch (error) {
       console.error('❌ 미소야 크롤링 및 저장 실패:', error);

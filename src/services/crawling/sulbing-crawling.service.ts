@@ -3,8 +3,7 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
 const { NaverGeocodingService } = require('../geocoding/naver-geocoding.service');
-const Franchise = require("../../models/branches_crawling");
-const mongoose = require("mongoose");
+const { saveToMongo } = require("../../repository/franchise");
 
 const SulbingStore = {
   brandName: "설빙",
@@ -62,7 +61,6 @@ async function crawlSulbingAll() {
             const loc = await NaverGeocodingService.geocodeAddress(store.address);
             if (loc?.coordinates) {
               store.location = { type: "Point", coordinates: loc.coordinates };
-              console.log(`🧭 ${store.branchName}: [${loc.coordinates[0]}, ${loc.coordinates[1]}]`);
             }
           } catch (err) {
             console.warn(`⚠️ 지오코딩 실패 (${store.address}):`, err);
@@ -92,22 +90,9 @@ if (require.main === module) {
       console.log("🎉 설빙 총 건수:", list.length);
       console.log("📝 샘플 데이터:", JSON.stringify(list.slice(0, 2), null, 2));
       
-      const uri = process.env.MONGODB_URI;
-      if (!uri) throw new Error("MONGODB_URI 환경변수 없음");
-      
-      console.log("🔌 데이터베이스 연결 중...");
-      await mongoose.connect(uri);
-      
-      try {
-        console.log("🗑️ 기존 설빙 데이터 삭제 중...");
-        await Franchise.deleteMany({ brandName: "설빙" });
-        console.log("💾 새로운 설빙 데이터 저장 중...");
-        await Franchise.insertMany(list, { ordered: false });
+       await saveToMongo(list, "sulbing_stores");
         console.log("✅ 설빙 저장 완료");
-      } finally {
-        await mongoose.disconnect();
-        console.log("🔌 데이터베이스 연결 해제");
-      }
+      
     } catch (error) {
       console.error("❌ 실행 실패:", error);
       process.exit(1);
