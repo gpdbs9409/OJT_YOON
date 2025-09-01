@@ -20,5 +20,11 @@
     "request": "^2.88.2",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
+  },
+  "scripts": {
+    "start": "ts-node Index.ts",
+    "dev": "ts-node Index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }
