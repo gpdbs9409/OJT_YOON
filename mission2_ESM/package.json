@@ -1,0 +1,22 @@
+{
+  "name": "mission2_ESM",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "@types/node-schedule": "^2.1.8",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "mongoose": "^8.18.0",
+    "node-schedule": "^2.1.1"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  }
+}
