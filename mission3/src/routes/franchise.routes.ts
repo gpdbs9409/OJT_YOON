@@ -1,7 +1,8 @@
-const { Router } = require('express');
-const { FranchiseController } = require('../controllers/franchise.controller');
+const { Router } = require("express");
+const { FranchiseController } = require("../controllers/franchise.controller");
 
 const router = Router();
+const franchiseController = new FranchiseController();
 
 /**
  * @swagger
@@ -34,7 +35,7 @@ const router = Router();
  *       500:
  *         description: 서버 오류
  */
-router.get('/', FranchiseController.getAllFranchises);
+router.get("/", franchiseController.getAllFranchises.bind(franchiseController));
 
 /**
  * @swagger
@@ -77,9 +78,7 @@ router.get('/', FranchiseController.getAllFranchises);
  *       500:
  *         description: 서버 오류
  */
-router.post('/', FranchiseController.createFranchise);
-
-
+router.post("/", franchiseController.createFranchise.bind(franchiseController));
 
 /**
  * @swagger
@@ -131,7 +130,10 @@ router.post('/', FranchiseController.createFranchise);
  *       500:
  *         description: 서버 오류
  */
-router.patch('/:id', FranchiseController.updateFranchise);
+router.patch(
+  "/:id",
+  franchiseController.updateFranchise.bind(franchiseController)
+);
 
 /**
  * @swagger
@@ -171,6 +173,9 @@ router.patch('/:id', FranchiseController.updateFranchise);
  *       500:
  *         description: 서버 오류
  */
-router.delete('/:id', FranchiseController.deleteFranchise);
+router.delete(
+  "/:id",
+  franchiseController.deleteFranchise.bind(franchiseController)
+);
 
 module.exports = router;
