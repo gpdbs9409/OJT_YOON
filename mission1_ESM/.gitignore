@@ -1,0 +1,34 @@
+# Node dependencies
+node_modules/
+
+# 환경변수
+.env
+
+# 빌드 산출물
+dist/
+build/
+
+# 로그/캐시
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+.pnpm-debug.log
+.cache/
+.tmp/
+
+# IDE/에디터 세팅
+.vscode/
+.idea/
+
+# OS 파일
+.DS_Store
+Thumbs.db
+
+# 테스트 커버리지
+coverage/
+
+# TypeScript 캐시
+*.tsbuildinfo

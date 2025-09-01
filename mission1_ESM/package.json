@@ -1,0 +1,23 @@
+{
+  "name": "mission1_ESM",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
+    "dotenv": "^17.2.1",
+    "mongoose": "^8.18.0"
+  },
+  "scripts": {
+    "start": "ts-node src/Index.ts",
+    "dev": "ts-node src/Index.ts",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
