@@ -3,14 +3,13 @@
 import axios = require("axios");
 import cheerio = require("cheerio");
 const { geocodeAddress } = require("./naver_map_api");
-const Franchise = require("../models/branches_crawling");
-const { saveToMongo } = require("./save_to_mongo");
 
 export type SulbingStore = {
   brandName: "설빙";
   branchName: string | undefined;
   address: string | undefined;
-  location?: { type: "Point"; coordinates: [number, number] }; // [lng, lat]
+  location?: { type: "Point"; coordinates: [string, string] }; // [lng, lat]
+  timestamp: string;
 };
 
 const BASE_URL = "https://sulbing.com/store/";
@@ -39,6 +38,7 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
   const all: SulbingStore[] = [];
 
   for (const region of REGIONS) {
+    console.log(`설빙 ${region} 지역 크롤링 중...`);
     const url = `${BASE_URL}?addr1=${encodeURIComponent(
       region
     )}&addr2=&search=`;
@@ -50,9 +50,11 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
     });
 
     const $ = cheerio.load(html);
-    const before = all.length; // ← 이 지역에서 추가되기 전 길이
+    const stores = $(".searchResult");
 
-    $(".searchResult").each((_, el) => {
+    // for 루프로 변경
+    for (let i = 0; i < stores.length; i++) {
+      const el = stores[i];
       const $el = $(el);
       const $a = $el.find("a.storeName");
 
@@ -63,37 +65,47 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
         $a.attr("address")?.trim() ||
         undefined;
 
-      if (!branchName && !address) return;
+      if (!branchName || !address) {
+        console.log("매장명 또는 주소가 없는 데이터 건너뛰기");
+        continue;
+      }
 
-      all.push({ brandName: "설빙", branchName, address });
-    });
+      try {
+        const loc = await geocodeAddress(address as string);
 
-    // 이 지역에서 새로 추가된 것만 지오코딩 (address는 있다고 가정)
-    for (let i = before; i < all.length; i++) {
-      const store: any = all[i];
-      const loc = await geocodeAddress(store.address as string);
-      if (loc?.coordinates) {
-        store.location = {
-          type: "Point" as const,
-          coordinates: loc.coordinates,
-        };
+        if (loc) {
+          const location = {
+            type: "Point" as const,
+            coordinates: [loc.x, loc.y] as [string, string],
+          };
+          const timestamp = new Date().toISOString();
+
+          all.push({
+            brandName: "설빙",
+            branchName,
+            address,
+            location,
+            timestamp,
+          });
+        } else {
+          console.log(`주소 변환 실패 (${address}): 좌표를 찾을 수 없음`);
+          // 주소 변환 실패해도 기본 데이터는 저장
+          const timestamp = new Date().toISOString();
+          all.push({ brandName: "설빙", branchName, address, timestamp });
+        }
+      } catch (error) {
+        console.error(`주소 변환 실패 (${address}):`, error);
+        // 주소 변환 실패해도 기본 데이터는 저장
+        const timestamp = new Date().toISOString();
+        all.push({ brandName: "설빙", branchName, address, timestamp });
       }
     }
+
+    console.log(`${region} 지역 완료: ${stores.length}개 매장 처리`);
   }
 
+  console.log(`총 ${all.length}개의 설빙 매장 데이터 수집 완료`);
   return all;
 }
 
 module.exports = { crawlSulbingAll };
-
-/* 단독 실행
-npx ts-node src/services/sulbing.ts
-*/
-if (require.main === module) {
-  async () => {
-    const list = await crawlSulbingAll(); // 플래그 제거
-    console.log("설빙 총 건수:", list.length);
-    console.log(JSON.stringify(list.slice(0, 2)));
-    await saveToMongo(list);
-  };
-}

@@ -1,19 +1,20 @@
 import cheerio = require("cheerio");
 import axios = require("axios");
 const { geocodeAddress } = require("./naver_map_api");
-const { saveToMongo } = require("./save_to_mongo");
-const mongoose = require("mongoose");
 
 const BASE_URL = "https://misoya.co.kr/map?sort=STREET&keyword_type=all";
 
+//미소야 타입 정의
 export type MisoyaStore = {
   brandName: "미소야";
-  branchName: string | undefined;
-  address: string | undefined;
-  phone?: string | undefined;
-  location?: { type: "Point"; coordinates: [number, number] };
+  branchName: string;
+  address: string;
+  phone: string;
+  location: { type: "Point"; coordinates: [string, string] };
+  timestamp: string;
 };
 
+//미소야 크롤링 함수
 async function crawlMisoyaAll(maxPages = 50): Promise<MisoyaStore[]> {
   const all: MisoyaStore[] = [];
   for (let page = 1; page <= maxPages; page++) {
@@ -24,46 +25,45 @@ async function crawlMisoyaAll(maxPages = 50): Promise<MisoyaStore[]> {
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
         Accept: "text/html,application/xhtml+xml",
       },
-      validateStatus: (s) => s >= 200 && s < 400,
     });
 
     const $ = cheerio.load(html);
-    const items: MisoyaStore[] = [];
-    $(".map-list-detail .map_container .map_contents").each((_, el) => {
+    const stores = $(".map-list-detail .map_container .map_contents");
+
+    // for 루프로 변경
+    for (let i = 0; i < stores.length; i++) {
+      const el = stores[i];
       const $el = $(el);
       const branchName = $el.find(".head .tit").text().trim();
       const address = $el.find(".p_group .adress").text().trim();
       const telHref = $el.find(".p_group .tell a[href^='tel:']").attr("href");
-      const phone = telHref ? telHref.replace("tel:", "").trim() : undefined;
-      items.push({ brandName: "미소야", branchName, address, phone });
-    });
+      const phone = telHref ? telHref.replace("tel:", "").trim() : "";
 
-    if (items.length === 0) break;
+      try {
+        const loc = await geocodeAddress(address);
+        const location = {
+          type: "Point" as const,
+          coordinates: [loc.x, loc.y] as [string, string],
+        };
+        const timestamp = new Date().toISOString();
 
-    for (const store of items) {
-      if (store.address) {
-        const loc = await geocodeAddress(store.address);
-        if (loc) store.location = loc;
+        all.push({
+          brandName: "미소야",
+          branchName,
+          address,
+          phone,
+          location,
+          timestamp,
+        });
+        console.log(`미소야 매장 추가: ${branchName} - ${address}`);
+      } catch (error) {
+        console.error(`주소 변환 실패 (${address}):`, error);
       }
-      all.push(store);
     }
+
+    if (all.length === 0) break;
   }
   return all;
-}
-
-if (require.main === module) {
-  (async () => {
-    try {
-      const list = await crawlMisoyaAll(5);
-      await saveToMongo(list);
-      console.log("Misoya 저장 완료");
-    } finally {
-      await mongoose.disconnect();
-    }
-  })().catch((e) => {
-    console.error(e);
-    process.exit(1);
-  });
 }
 
 module.exports = { crawlMisoyaAll };
