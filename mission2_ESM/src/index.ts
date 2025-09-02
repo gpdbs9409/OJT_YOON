@@ -18,7 +18,7 @@ async function startServer() {
     app.listen(PORT, () => {
       console.log("🚀 서버가 시작되었습니다!");
       console.log(`📍 서버 주소: http://localhost:${PORT}`);
-      console.log("⏰ 스케줄러가 매분마다 실행됩니다 (테스트 모드)");
+      console.log("⏰ 스케줄러가 매분마다 실행됩니다");
     });
 
     // 초기 데이터 업데이트 실행

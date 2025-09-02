@@ -3,6 +3,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { geocodeAddress } from "./naver_map_api.ts";
+import { userAgent } from "../utils/headers.ts";
 
 export type SulbingStore = {
   brandName: "설빙";
@@ -44,7 +45,7 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
     )}&addr2=&search=`;
     const { data: html } = await axios.get(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0",
+        "User-Agent": userAgent.toString(),
         Accept: "text/html,application/xhtml+xml",
       },
     });
@@ -57,11 +58,10 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
       const $el = $(el);
       const $a = $el.find("a.storeName");
 
-      const branchName =
-        ($a.attr("storename") || $a.text() || "").trim() || undefined;
+      const branchName = ($a.attr("storename") || "").trim() || undefined;
       const address =
         $el.find("span.address").first().text().trim() ||
-        $a.attr("address")?.trim() ||
+        //adress가 정의되지 않은 경우 undefined
         undefined;
 
       if (!branchName || !address) {
@@ -72,28 +72,21 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
       try {
         const loc = await geocodeAddress(address as string);
 
-        if (loc) {
-          const location = {
-            type: "Point" as const,
-            coordinates: [loc.x, loc.y] as [string, string],
-          };
-          const timestamp = new Date().toLocaleString("ko-KR", {
-            timeZone: "Asia/Seoul",
-          });
+        const location = {
+          type: "Point" as const,
+          coordinates: [loc?.x || "0", loc?.y || "0"] as [string, string], //undefined인 경우 0으로 처리
+        };
+        const timestamp = new Date().toLocaleString("ko-KR", {
+          timeZone: "Asia/Seoul",
+        });
 
-          all.push({
-            brandName: "설빙",
-            branchName,
-            address,
-            location,
-            timestamp,
-          });
-        } else {
-          console.log(`주소 변환 실패 (${address}): 좌표를 찾을 수 없음`);
-          // 주소 변환 실패해도 기본 데이터는 저장
-          const timestamp = new Date().toISOString();
-          all.push({ brandName: "설빙", branchName, address, timestamp });
-        }
+        all.push({
+          brandName: "설빙",
+          branchName,
+          address,
+          location,
+          timestamp,
+        });
       } catch (error) {
         console.error(`주소 변환 실패 (${address}):`, error);
         // 주소 변환 실패해도 기본 데이터는 저장

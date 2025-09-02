@@ -1,11 +1,8 @@
-//매일 오전 12시 정각에 실행되는 스케줄러
+//매분 실행되는 스케줄러
 //latest_version_pk 와 next_version_pk를 비교해서 다르면 새로운 데이터를 받아서 저장
 import schedule from "node-schedule";
 import mongoose from "mongoose";
-import {
-  fetchLatestVersionPk,
-  fetch_all_list_using_next,
-} from "./get_from_api";
+import { fetchLatestVersionPk, fetchAllStoreList } from "./get_from_api";
 
 async function getExistingVersionPk() {
   const existingVersionPk = await mongoose.connection
@@ -23,7 +20,7 @@ async function dailydataupdate() {
 
   if (latestVersionPk !== existingVersionPk) {
     const existingVersionPk = latestVersionPk;
-    await fetch_all_list_using_next();
+    await fetchAllStoreList();
   } else {
     console.log("✅ 새로운 데이터가 없습니다.");
   }

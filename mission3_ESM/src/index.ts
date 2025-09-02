@@ -8,23 +8,20 @@ import { createSwaggerSpec } from "./utils/swagger";
 dotenv.config();
 const app = express();
 
-// Middleware
-app.use(express.json());
-
 // Swagger setup
-const swaggerSpec = createSwaggerSpec(3003);
+const swaggerSpec = createSwaggerSpec(3003); //swagger spec 3003 포트로 생성
 
-// Routes
+// 서버에 라우팅 등록
 app.use("/api/v1/franchises", franchiseRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use(express.json()); //json 형식으로 데이터를 받기 위한 미들웨어
 
 async function startServer() {
   try {
     app.listen(3003, () => {
       console.log("🚀 서버가 시작되었습니다!");
-      console.log(`swagger UI: http://localhost:3003/api-docs`);
-
       mongoose.connect(process.env.MONGODB_URI as string);
+      console.log(`swagger UI: http://localhost:3003/api-docs`);
       console.log("connected to mongodb");
     });
   } catch (error) {

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
+import { branches } from "../model/branch"; // Branch schema 정의
 
-// Branch type 정의
 type Branch = {
   brandName: string;
   branchName: string;
@@ -23,8 +23,12 @@ async function saveToMongo(data: Branch[], collectionname: string) {
     if (!collection) {
       await mongoose.connection.createCollection(collectionname);
     }
+    await collection.deleteMany({});
 
-    const result = await collection.insertMany(data, {
+    const validatedData = data.map((item: any) => {
+      return new branches(item); // 스키마 검증
+    });
+    const result = await collection.insertMany(validatedData, {
       ordered: false,
     });
     console.log(`MongoDB 저장 완료: ${result.insertedCount}건`);

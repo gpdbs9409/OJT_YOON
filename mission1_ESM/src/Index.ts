@@ -5,15 +5,8 @@ dotenv.config();
 // 서비스들 import
 import { crawlSulbingAll } from "./services/sulbing_crawl.ts";
 import { saveToMongo } from "./repository/save_to_mongo.ts";
+import type { Branch } from "./repository/save_to_mongo.ts";
 
-// Branch 타입 정의
-type Branch = {
-  brandName: string;
-  branchName: string;
-  address: string;
-  location: { type: "Point"; coordinates: [string, string] };
-  timestamp: string;
-};
 // 메인 실행 함수
 async function main() {
   try {
