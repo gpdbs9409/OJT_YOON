@@ -16,7 +16,7 @@ function createSwaggerSpec(port: number) {
         },
       ],
     },
-    apis: ["./src/routes/*.ts"], // API 라우트 파일들
+    apis: ["./src/**/*.js"], // JavaScript 파일로 변경
   };
 
   return swaggerJsdoc(swaggerOptions);

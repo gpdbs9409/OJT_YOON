@@ -15,7 +15,7 @@ app.use(express.json());
 const swaggerSpec = createSwaggerSpec(3003);
 
 // Routes
-app.use("/api/franchises", franchiseRoutes);
+app.use("/api/v1/franchises", franchiseRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 async function startServer() {
@@ -30,8 +30,6 @@ async function startServer() {
   } catch (error) {
     console.error("❌ 서버 시작 실패:", error);
     process.exit(1);
-  } finally {
-    mongoose.connection.close();
   }
 }
 

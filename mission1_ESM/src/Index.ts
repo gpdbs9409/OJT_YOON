@@ -27,12 +27,6 @@ async function main() {
     console.log(`설빙 데이터 수집 완료: ${sulbingData.length}건`);
     await saveToMongo(sulbingData as Branch[], "sulbing");
     console.log("설빙 데이터 저장 완료");
-    // 미소야 크롤링
-    // console.log("🍜 미소야 크롤링 중...");
-    // const misoyaData = await crawlMisoyaAll();
-    // console.log(`미소야 데이터 수집 완료: ${misoyaData.length}건`);
-    // await saveToMongo(misoyaData, "misoya");
-    // console.log("미소야 데이터 저장 완료");
     console.log("✅ 모든 작업 완료!");
   } catch (error) {
     console.error("❌ 프로그램 실행 중 오류 발생:", error);
