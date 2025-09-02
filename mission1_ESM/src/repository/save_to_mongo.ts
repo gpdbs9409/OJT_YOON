@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { branches } from "../model/branch"; // Branch schema 정의
+import { branches } from "../model/branch.ts"; // Branch schema 정의
 
 type Branch = {
   brandName: string;
