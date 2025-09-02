@@ -1,0 +1,11 @@
+{
+  "name": "OJT_YOON",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/gpdbs9409/OJT_YOON",
+  "author": "gpdbs9409 <gpdbs9409@naver.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.9.2"
+  }
+}
