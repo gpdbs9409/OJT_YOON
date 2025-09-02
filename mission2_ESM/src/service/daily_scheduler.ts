@@ -8,7 +8,7 @@ async function getExistingVersionPk() {
   const existingVersionPk = await mongoose.connection
     .collection("latest_version_pk")
     .findOne({});
-  return existingVersionPk;
+  return existingVersionPk?.latestVersionPk;
 }
 
 //latest_version_pk 와 existingVersionPk 비교해서 다르면 새로운 데이터를 받아서 저장하고 pk update 하기.
@@ -19,7 +19,6 @@ async function dailydataupdate() {
   const latestVersionPk = await fetchLatestVersionPk();
 
   if (latestVersionPk !== existingVersionPk) {
-    const existingVersionPk = latestVersionPk;
     await fetchAllStoreList();
   } else {
     console.log("✅ 새로운 데이터가 없습니다.");

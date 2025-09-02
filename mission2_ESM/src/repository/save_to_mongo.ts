@@ -13,9 +13,6 @@ type Branch = {
 export async function saveToMongoFromApi(apiData: { results: Branch[] }) {
   const collection = mongoose.connection.collection("api_data");
 
-  //db초기화
-  await collection.deleteMany({});
-
   // 스키마 검증 및 변환
   const validatedData = apiData.results.map((item: Branch) => {
     return new branch({
@@ -26,7 +23,7 @@ export async function saveToMongoFromApi(apiData: { results: Branch[] }) {
     }); // 스키마 검증
   });
 
-  //데이터 insert
+  //데이터 insert (누적 저장)
   await collection.insertMany(validatedData);
 }
 
