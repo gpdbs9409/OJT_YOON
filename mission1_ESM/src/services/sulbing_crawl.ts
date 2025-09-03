@@ -10,7 +10,6 @@ export type SulbingStore = {
   branchName: string | undefined;
   address: string | undefined;
   location?: { type: "Point"; coordinates: [string, string] }; // [lng, lat]
-  timestamp: string;
 };
 
 const BASE_URL = "https://sulbing.com/store/";
@@ -76,22 +75,16 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
           type: "Point" as const,
           coordinates: [loc?.x || "0", loc?.y || "0"] as [string, string], //undefined인 경우 0으로 처리
         };
-        const timestamp = new Date().toLocaleString("ko-KR", {
-          timeZone: "Asia/Seoul",
-        });
-
         all.push({
           brandName: "설빙",
           branchName,
           address,
           location,
-          timestamp,
         });
       } catch (error) {
         console.error(`주소 변환 실패 (${address}):`, error);
         // 주소 변환 실패해도 기본 데이터는 저장
-        const timestamp = new Date().toISOString();
-        all.push({ brandName: "설빙", branchName, address, timestamp });
+        all.push({ brandName: "설빙", branchName, address });
       }
     }
 

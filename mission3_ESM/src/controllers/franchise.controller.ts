@@ -17,6 +17,9 @@ class FranchiseController {
   async createFranchise(req: Request, res: Response) {
     try {
       const franchise = await api_data.create(req.body);
+      console.log("franchise", franchise);
+      console.log("req.body", req.body);
+      console.log("typeof req.body", typeof req.body);
       res.status(201).json({
         message: "성공적으로 프랜차이즈가 생성되었습니다.",
         data: franchise,
@@ -30,9 +33,13 @@ class FranchiseController {
   async updateFranchise(req: Request, res: Response) {
     try {
       const { id } = req.params;
+      console.log("Update ID:", id);
+      console.log("Update Body:", req.params);
+
       const franchise = await api_data.findByIdAndUpdate(
         id,
         req.body,
+
         { new: true, runValidators: true } // 스키마 검증 실행
       );
 

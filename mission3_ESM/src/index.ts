@@ -7,6 +7,7 @@ import { createSwaggerSpec } from "./utils/swagger";
 
 dotenv.config();
 const app = express();
+app.use(express.json()); //json 형식으로 데이터를 받기 위한 미들웨어
 
 // Swagger setup
 const swaggerSpec = createSwaggerSpec(3003); //swagger spec 3003 포트로 생성
@@ -14,7 +15,6 @@ const swaggerSpec = createSwaggerSpec(3003); //swagger spec 3003 포트로 생�
 // 서버에 라우팅 등록
 app.use("/api/v1/franchises", franchiseRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-app.use(express.json()); //json 형식으로 데이터를 받기 위한 미들웨어
 
 async function startServer() {
   try {
