@@ -6,9 +6,34 @@ class FranchiseController {
   async getAllFranchises(req: Request, res: Response) {
     //전체 데이터 조회 현재로써는 request없음
     try {
-      const franchise = await api_data.find({}); //현재 db에 명륜진사갈비 데이터 밖에 없기에 Find에 조건 없음 (전제데이터조회)
-      res.status(200).json(franchise);
+      console.log("Query parameters:", req.query);
+      console.log("Cursor:", req.query.cursor);
+
+      const franchise = await api_data.find({});
+      const cursor = req.query.cursor || null; // GET 요청은 query 사용
+      console.log("Processed cursor:", cursor);
+
+      if (cursor) {
+        // cursor가 있을 때의 로직
+        const nextFranchise = await api_data
+          .find({ _id: { $gt: cursor } })
+          .limit(10);
+        const nextCursor =
+          nextFranchise.length > 0
+            ? nextFranchise[nextFranchise.length - 1]?._id
+            : null;
+        return res.status(200).json({ data: nextFranchise, nextCursor });
+      }
+
+      // cursor가 없을 때는 처음 10개만 반환
+      const limitedFranchise = await api_data.find({}).limit(10);
+      const nextCursor =
+        limitedFranchise.length > 0
+          ? limitedFranchise[limitedFranchise.length - 1]?._id
+          : null;
+      return res.status(200).json({ data: limitedFranchise, nextCursor });
     } catch (error) {
+      console.error("Error in getAllFranchises:", error);
       res.status(500).json({ error: "서버 오류가 발생했습니다." });
     }
   }

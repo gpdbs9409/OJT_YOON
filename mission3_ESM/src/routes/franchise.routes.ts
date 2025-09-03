@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { FranchiseController } from "../controllers/franchise.controller";
+import { FranchiseController } from "../service/franchise.crud";
 
 const router = Router();
 const franchiseController = new FranchiseController();
@@ -9,32 +9,69 @@ const franchiseController = new FranchiseController();
  * /api/v1/franchises:
  *   get:
  *     summary: 프랜차이즈 전체 목록 조회
- *     description: 모든 프랜차이즈 목록을 조회합니다.
+ *     description: 모든 프랜차이즈 목록을 조회합니다. cursor 파라미터를 사용하여 페이지네이션을 지원합니다.
+ *     parameters:
+ *       - in: query
+ *         name: cursor
+ *         schema:
+ *           type: string
+ *         description: 페이지네이션을 위한 커서 (마지막 아이템의 _id)
+ *         required: false
  *     responses:
  *       200:
  *         description: 성공적으로 프랜차이즈 목록을 조회함
  *         content:
  *           application/json:
  *             schema:
- *               type: array
- *               items:
- *                 type: object
- *                 properties:
- *                   _id:
- *                     type: string
- *                     description: 프랜차이즈 ID
- *                   name:
- *                     type: string
- *                     description: 프랜차이즈 이름
- *                   addr:
- *                     type: string
- *                     description: 주소
- *                   tel:
- *                     type: string
- *                     description: 전화번호
- *                   period:
- *                     type: string
- *                     description: 기간
+ *               oneOf:
+ *                 - type: array
+ *                   description: 전체 데이터 조회 시
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         description: 프랜차이즈 ID
+ *                       name:
+ *                         type: string
+ *                         description: 프랜차이즈 이름
+ *                       addr:
+ *                         type: string
+ *                         description: 주소
+ *                       tel:
+ *                         type: string
+ *                         description: 전화번호
+ *                       period:
+ *                         type: string
+ *                         description: 기간
+ *                 - type: object
+ *                   description: 페이지네이션 조회 시
+ *                   properties:
+ *                     data:
+ *                       type: array
+ *                       description: 프랜차이즈 목록
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           _id:
+ *                             type: string
+ *                             description: 프랜차이즈 ID
+ *                           name:
+ *                             type: string
+ *                             description: 프랜차이즈 이름
+ *                           addr:
+ *                             type: string
+ *                             description: 주소
+ *                           tel:
+ *                             type: string
+ *                             description: 전화번호
+ *                           period:
+ *                             type: string
+ *                             description: 기간
+ *                     nextCursor:
+ *                       type: string
+ *                       description: 다음 페이지 조회를 위한 커서
+ *                       nullable: true
  *       500:
  *         description: 서버 오류
  *         content:
