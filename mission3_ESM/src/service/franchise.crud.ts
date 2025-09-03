@@ -40,6 +40,7 @@ class FranchiseController {
 
   //create
   async createFranchise(req: Request, res: Response) {
+    //
     try {
       const franchise = await api_data.create(req.body);
       console.log("franchise", franchise);

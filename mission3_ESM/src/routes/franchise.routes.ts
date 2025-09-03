@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { FranchiseController } from "../service/franchise.crud";
+import { authMiddleware } from "../middleware/authorization";
 
 const router = Router();
 const franchiseController = new FranchiseController();
@@ -10,6 +11,8 @@ const franchiseController = new FranchiseController();
  *   get:
  *     summary: 프랜차이즈 전체 목록 조회
  *     description: 모든 프랜차이즈 목록을 조회합니다. cursor 파라미터를 사용하여 페이지네이션을 지원합니다.
+ *     security:
+ *       - Authorization: []
  *     parameters:
  *       - in: query
  *         name: cursor
@@ -72,6 +75,32 @@ const franchiseController = new FranchiseController();
  *                       type: string
  *                       description: 다음 페이지 조회를 위한 커서
  *                       nullable: true
+ *       401:
+ *         description: 인증 헤더 없음
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: 에러 메시지
+ *                 message:
+ *                   type: string
+ *                   description: 상세 메시지
+ *       403:
+ *         description: 인증 실패
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   description: 에러 메시지
+ *                 message:
+ *                   type: string
+ *                   description: 상세 메시지
  *       500:
  *         description: 서버 오류
  *         content:
@@ -83,7 +112,11 @@ const franchiseController = new FranchiseController();
  *                   type: string
  *                   description: 에러 메시지
  */
-router.get("/", franchiseController.getAllFranchises.bind(franchiseController));
+router.get(
+  "/",
+  authMiddleware,
+  franchiseController.getAllFranchises.bind(franchiseController)
+);
 
 /**
  * @swagger
@@ -165,7 +198,11 @@ router.get("/", franchiseController.getAllFranchises.bind(franchiseController));
  *                   type: string
  *                   description: 에러 메시지
  */
-router.post("/", franchiseController.createFranchise.bind(franchiseController));
+router.post(
+  "/",
+  authMiddleware,
+  franchiseController.createFranchise.bind(franchiseController)
+);
 
 /**
  * @swagger
@@ -257,6 +294,7 @@ router.post("/", franchiseController.createFranchise.bind(franchiseController));
  */
 router.patch(
   "/:id",
+  authMiddleware,
   franchiseController.updateFranchise.bind(franchiseController)
 );
 
@@ -297,6 +335,7 @@ router.patch(
  */
 router.delete(
   "/:id",
+  authMiddleware,
   franchiseController.deleteFranchise.bind(franchiseController)
 );
 
