@@ -3,38 +3,35 @@ import { api_data } from "../model/api_data";
 
 //read
 class FranchiseController {
-  async getAllFranchises(req: Request, res: Response) {
-    //전체 데이터 조회 현재로써는 request없음
+  async getFranchisesByLimitAndCursor(limit: number, req: Request) {
     try {
-      console.log("Query parameters:", req.query);
-      console.log("Cursor:", req.query.cursor);
+      const cursor = req.query.cursor as string;
 
-      const franchise = await api_data.find({});
-      const cursor = req.query.cursor || null; // GET 요청은 query 사용
-      console.log("Processed cursor:", cursor);
+      console.log("Limit:", limit);
+      console.log("Cursor:", cursor);
+      // cursor가 있을 때의 로직
 
       if (cursor) {
-        // cursor가 있을 때의 로직
-        const nextFranchise = await api_data
+        const nextFranchise = await api_data // cursor값을 기준으로 다음 아이템을 조회
           .find({ _id: { $gt: cursor } })
-          .limit(10);
-        const nextCursor =
+          .limit(limit);
+        const nextCursor = //nextCursor는 nextFranchise의 마지막 아이템의 _id
           nextFranchise.length > 0
             ? nextFranchise[nextFranchise.length - 1]?._id
             : null;
-        return res.status(200).json({ data: nextFranchise, nextCursor });
+        return { data: nextFranchise, nextCursor };
       }
 
-      // cursor가 없을 때는 처음 10개만 반환
-      const limitedFranchise = await api_data.find({}).limit(10);
+      // cursor가 없을 때는 처음 limit개만 반환
+      const limitedFranchise = await api_data.find({}).limit(limit);
       const nextCursor =
         limitedFranchise.length > 0
           ? limitedFranchise[limitedFranchise.length - 1]?._id
           : null;
-      return res.status(200).json({ data: limitedFranchise, nextCursor });
+      return { data: limitedFranchise, nextCursor };
     } catch (error) {
       console.error("Error in getAllFranchises:", error);
-      res.status(500).json({ error: "서버 오류가 발생했습니다." });
+      throw new Error("서버 오류가 발생했습니다.");
     }
   }
 

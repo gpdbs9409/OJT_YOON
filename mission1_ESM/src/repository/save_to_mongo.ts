@@ -5,8 +5,7 @@ type Branch = {
   brandName: string;
   branchName: string;
   address: string;
-  location: { type: "Point"; coordinates: [string, string] };
-  timestamp: string;
+  location: { type: "Point"; coordinates: [number, number] };
 };
 
 async function saveToMongo(data: Branch[], collectionname: string) {
@@ -17,10 +16,7 @@ async function saveToMongo(data: Branch[], collectionname: string) {
     }
     // db collection 선택
     const collection = mongoose.connection.collection(collectionname);
-    // 만약 collection이 없으면 생성
-    if (!collection) {
-      await mongoose.connection.createCollection(collectionname);
-    }
+
     await collection.deleteMany({});
     const validatedData = data.map((item: any) => {
       return new branches(item); // 스키마 검증

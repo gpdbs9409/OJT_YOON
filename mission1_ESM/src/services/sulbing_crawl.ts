@@ -9,7 +9,7 @@ export type SulbingStore = {
   brandName: "설빙";
   branchName: string | undefined;
   address: string | undefined;
-  location?: { type: "Point"; coordinates: [string, string] }; // [lng, lat]
+  location?: { type: "Point"; coordinates: [number, number] }; // [lng, lat]
 };
 
 const BASE_URL = "https://sulbing.com/store/";
@@ -71,15 +71,18 @@ async function crawlSulbingAll(): Promise<SulbingStore[]> {
       try {
         const loc = await geocodeAddress(address as string);
 
-        const location = {
-          type: "Point" as const,
-          coordinates: [loc?.x || "0", loc?.y || "0"] as [string, string], //undefined인 경우 0으로 처리
-        };
+        const location = loc
+          ? {
+              type: "Point" as const,
+              coordinates: loc.coordinates as [number, number], // GeoJSON Point 형식 사용
+            }
+          : undefined;
+
         all.push({
           brandName: "설빙",
           branchName,
           address,
-          location,
+          ...(location && { location }),
         });
       } catch (error) {
         console.error(`주소 변환 실패 (${address}):`, error);

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { FranchiseController } from "../service/franchise.crud";
 import { authMiddleware } from "../middleware/authorization";
+import { validatePaginationParams } from "../middleware/pagination";
 
 const router = Router();
 const franchiseController = new FranchiseController();
@@ -115,7 +116,19 @@ const franchiseController = new FranchiseController();
 router.get(
   "/",
   authMiddleware,
-  franchiseController.getAllFranchises.bind(franchiseController)
+  validatePaginationParams, //req.validatedParams에 limit 값이 들어가 있음.
+  async (req, res, next) => {
+    try {
+      const { limit } = (req as any).validatedParams;
+      const data = await franchiseController.getFranchisesByLimitAndCursor(
+        limit,
+        req
+      );
+      res.status(200).json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
 );
 
 /**

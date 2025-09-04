@@ -10,7 +10,9 @@ import type { Branch } from "./repository/save_to_mongo.ts";
 // 메인 실행 함수
 async function main() {
   try {
-    await mongoose.connect(process.env.MONGODB_URI as string); // string으로 타입 캐스팅
+    await mongoose.connect(process.env.MONGODB_URI as string, {
+      autoCreate: true, // 컬렉션이 없을 때 자동 생성
+    }); // string으로 타입 캐스팅
     console.log("🚀 Mission1 프로그램 시작");
     console.log("📊 크롤링 시작...");
 

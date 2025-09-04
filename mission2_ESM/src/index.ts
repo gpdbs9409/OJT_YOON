@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import express, { Express } from "express";
-import mongoose from "mongoose";
 import { dailydataupdate } from "./service/daily_scheduler";
 
 const app: Express = express();
@@ -10,10 +9,6 @@ const PORT = Number(process.env.PORT || 3000);
 // 서버 시작
 async function startServer() {
   try {
-    // MongoDB 연결
-    await mongoose.connect(process.env.MONGODB_URI as string);
-    console.log("✅ MongoDB 연결 성공");
-
     // 서버 시작
     app.listen(PORT, () => {
       console.log("🚀 서버가 시작되었습니다!");
