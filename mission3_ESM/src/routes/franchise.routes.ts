@@ -137,6 +137,8 @@ router.get(
  *   post:
  *     summary: 새로운 프랜차이즈 생성
  *     description: 새로운 프랜차이즈 정보를 생성합니다.
+ *     security:
+ *       - Authorization: []
  *     requestBody:
  *       required: true
  *       content:
@@ -160,6 +162,7 @@ router.get(
  *               - name
  *               - addr
  *               - tel
+ *               - period
  *     responses:
  *       201:
  *         description: 성공적으로 프랜차이즈가 생성됨
@@ -223,6 +226,8 @@ router.post(
  *   patch:
  *     summary: 프랜차이즈 정보 수정
  *     description: 특정 프랜차이즈 정보를 부분적으로 수정합니다.
+ *     security:
+ *       - Authorization: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -317,6 +322,8 @@ router.patch(
  *   delete:
  *     summary: 프랜차이즈 삭제
  *     description: 특정 프랜차이즈 정보를 삭제합니다.
+ *     security:
+ *       - Authorization: []
  *     parameters:
  *       - in: path
  *         name: id
