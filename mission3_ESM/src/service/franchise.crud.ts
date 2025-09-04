@@ -39,10 +39,16 @@ class FranchiseController {
   async createFranchise(req: Request, res: Response) {
     //
     try {
+      const { name, addr, tel, period } = req.body;
+      if (!name || !addr || !tel || !period) {
+        return res.status(400).json({
+          error: "필수 필드가 누락되었습니다.",
+          required: ["name", "addr", "tel", "period"],
+          received: Object.keys(req.body),
+        });
+      }
       const franchise = await api_data.create(req.body);
       console.log("franchise", franchise);
-      console.log("req.body", req.body);
-      console.log("typeof req.body", typeof req.body);
       res.status(201).json({
         message: "성공적으로 프랜차이즈가 생성되었습니다.",
         data: franchise,
@@ -80,6 +86,8 @@ class FranchiseController {
       res.status(400).json({ error: (error as Error).message });
     }
   }
+
+  //
 
   //delete
   async deleteFranchise(req: Request, res: Response) {
