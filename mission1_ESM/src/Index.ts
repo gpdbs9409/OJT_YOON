@@ -1,17 +1,16 @@
 import mongoose from "mongoose";
-import * as dotenv from "dotenv"; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import * as dotenv from "dotenv"; //
 dotenv.config();
 
-// 서비스들 import
 import { crawlSulbingAll } from "./services/sulbing_crawl.ts";
 import { saveToMongo } from "./repository/save_to_mongo.ts";
 import type { Branch } from "./repository/save_to_mongo.ts";
-
 import {
   findBranchesWithinRadius,
   findBranchesWithinPolygon,
   getLocationsFromMongo,
 } from "./repository/get_from_mongo.ts";
+
 // 메인 실행 함수
 async function main() {
   try {
@@ -21,7 +20,7 @@ async function main() {
     console.log("🚀 Mission1 프로그램 시작");
     console.log("📊 크롤링 시작...");
 
-    // 설빙 크롤링
+    //설빙 크롤링
 
     // console.log("🍧 설빙 크롤링 중...");
     // const sulbingData = await crawlSulbingAll();
@@ -39,11 +38,11 @@ async function main() {
     const firstLocation = locations.names[0];
     console.log("첫번째 설빙 매장명:", firstLocation);
 
-    const radiusResults = await findBranchesWithinRadius(10000);
+    const radiusResults = await findBranchesWithinRadius(10000); //10km 반경에 있는 매장들 찾기
 
     if (radiusResults.length > 0) {
-      console.log("존재 갯수:", radiusResults.length);
-      console.log("First result:", radiusResults[0]?.branchName);
+      console.log("매장 갯수:", radiusResults.length);
+      console.log("매장 리스트:", radiusResults[0]?.branchName);
     } else {
       console.log("10km 반경에 매장이 없습니다.");
     }
@@ -54,15 +53,18 @@ async function main() {
     );
     const polygonResults = await findBranchesWithinPolygon();
     if (polygonResults.length > 0) {
-      console.log("존재 갯수:", polygonResults.length);
-      console.log("First result:", polygonResults[0]?.branchName);
+      console.log("매장 갯수:", polygonResults.length);
+      console.log(
+        "매장 리스트:",
+        polygonResults.map((result) => result.branchName)
+      );
     } else {
       console.log("사각형 내에 매장이 없습니다.");
     }
 
     console.log("\n✅ 모든 테스트 완료!");
   } catch (error) {
-    console.error("❌ 프로그램 실행 중 오류 발생:", error);
+    console.error("❌ :", error);
     process.exit(1);
   } finally {
     // MongoDB 연결 종료
@@ -71,7 +73,6 @@ async function main() {
   }
 }
 
-// 직접 실행 시에만 main 함수 실행
 main();
 
 export { main };
